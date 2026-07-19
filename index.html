@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
+  <link rel="mask-icon" href="./favicon.svg" color="#b76e79" />
+  <title>Call-Note Drafting Demo — Janackeh Blackwell</title>
+  <meta name="description" content="Interactive demo of an AI-assisted call-note drafting workflow for support operations. Rule-based portfolio demo using anonymized sample data — not connected to live customer systems." />
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./demo.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to demo</a>
+
+  <header class="demo-header" id="header">
+    <div class="demo-header-inner">
+      <a class="brand" href="https://janackeh.me/" aria-label="Back to Janackeh Blackwell's site">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+          <rect width="32" height="32" rx="8" fill="currentColor"/>
+          <text x="16" y="23" text-anchor="middle" font-family="Satoshi, sans-serif" font-weight="700" font-size="20" fill="var(--color-bg)">J</text>
+        </svg>
+        <span class="brand-name">Janackeh Blackwell</span>
+      </a>
+      <nav class="demo-nav" aria-label="Demo navigation">
+        <a href="https://janackeh.me/#work">Back to site</a>
+        <button class="theme-toggle" data-theme-toggle type="button" aria-label="Switch to dark mode"></button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="demo-hero">
+      <div class="container">
+        <p class="eyebrow reveal">Interactive portfolio demo · Anonymized sample data</p>
+        <h1 class="demo-title reveal">AI-Assisted Call-Note Drafting</h1>
+        <p class="demo-sub reveal">A human-in-the-loop support workflow demo. Pick a scenario, toggle the prompt iteration, draft a CRM note, then edit it and see exactly what you changed.</p>
+        <p class="demo-label reveal">Rule-based portfolio demo — not connected to live customer systems. Nothing you type is sent anywhere or stored.</p>
+      </div>
+    </section>
+
+    <div class="banner banner-amber reveal" role="status">
+      <span class="banner-dot" aria-hidden="true"></span>
+      <span><strong>This is a draft.</strong> Review and edit before posting — AI can be wrong.</span>
+    </div>
+
+    <section class="container">
+      <div class="demonstrates reveal">
+        <h2 class="demonstrates-title">What this demonstrates</h2>
+        <ul class="demonstrates-list">
+          <li><strong>Prompt iteration</strong> — toggle between full-summary (v1) and result-only (v2) output.</li>
+          <li><strong>Structured CRM output</strong> — a clean Subject line plus a 1–3 sentence Call Summary.</li>
+          <li><strong>PII awareness</strong> — emails, phones, and card-like numbers are flagged and masked before drafting.</li>
+          <li><strong>Human edit &amp; review</strong> — the draft is editable; a diff shows exactly what the human changed.</li>
+          <li><strong>Outcome-focused v2</strong> — the current prompt restricts the note to the call result, not every action taken.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="container">
+      <div class="controls reveal">
+        <div class="control">
+          <label for="scenario" class="control-label">Scenario</label>
+          <select id="scenario" class="select">
+            <option value="billing">Billing dispute</option>
+            <option value="order">Order status</option>
+            <option value="tracking">Tracking request</option>
+            <option value="cancellation">Cancellation request</option>
+            <option value="warranty">Warranty replacement</option>
+          </select>
+        </div>
+        <div class="control">
+          <span class="control-label" id="mode-label">Mode</span>
+          <div class="segmented" role="group" aria-labelledby="mode-label">
+            <button type="button" class="seg active" data-mode="v1" aria-pressed="true">Full summary (v1)</button>
+            <button type="button" class="seg" data-mode="v2" aria-pressed="false">Result only (v2)</button>
+          </div>
+        </div>
+        <div class="control control-actions">
+          <button type="button" id="loadSample" class="btn btn-ghost btn-sm">Load sample</button>
+        </div>
+      </div>
+
+      <div class="workspace">
+        <!-- LEFT: input -->
+        <div class="card card-input reveal">
+          <div class="card-head">
+            <h2 class="card-title">Call transcript summary</h2>
+            <span class="card-hint">Paste a Five9 Agent Assist summary</span>
+          </div>
+          <div class="warn warn-strong">
+            Use mock data only. This static demo does not send or store your input, but do not paste real customer, order, ticket, or call data — treat anything here as if it could be processed by an AI provider.
+          </div>
+          <textarea id="transcript" class="textarea" rows="12" placeholder="Paste the Agent Assist transcript summary here, or click 'Load sample'..."></textarea>
+
+          <div id="piiPanel" class="pii-panel" hidden>
+            <p class="pii-title"><span aria-hidden="true">⚠</span> Possible PII detected</p>
+            <p class="pii-text" id="piiText"></p>
+            <ul class="pii-list" id="piiList"></ul>
+            <div class="pii-actions">
+              <button type="button" id="redactBtn" class="btn btn-primary btn-sm">Redact flagged items</button>
+              <button type="button" id="anywayBtn" class="btn btn-ghost btn-sm">I understand it's mock-only — draft anyway</button>
+            </div>
+          </div>
+
+          <div class="input-actions">
+            <button type="button" id="draftBtn" class="btn btn-primary">Draft note</button>
+            <span id="draftStatus" class="status-text" aria-live="polite"></span>
+          </div>
+        </div>
+
+        <!-- RIGHT: output -->
+        <div class="card card-output reveal">
+          <div class="card-head">
+            <h2 class="card-title">Draft CRM note</h2>
+            <span class="card-hint">Editable — review before posting</span>
+          </div>
+
+          <div id="outputEmpty" class="output-empty">
+            <p>Draft appears here.</p>
+            <p class="output-empty-hint">Load a sample, then click <strong>Draft note</strong> to see the workflow.</p>
+          </div>
+
+          <div id="output" class="output" hidden>
+            <div class="field">
+              <div class="field-head">
+                <label for="subjectOut" class="field-label">Subject</label>
+                <button type="button" class="copy-btn" data-copy="subjectOut">Copy</button>
+              </div>
+              <input type="text" id="subjectOut" class="field-input" />
+            </div>
+            <div class="field">
+              <div class="field-head">
+                <label for="summaryOut" class="field-label">Call Summary</label>
+                <button type="button" class="copy-btn" data-copy="summaryOut">Copy</button>
+              </div>
+              <textarea id="summaryOut" class="field-area" rows="5"></textarea>
+            </div>
+            <div class="output-actions">
+              <button type="button" id="diffBtn" class="btn btn-ghost btn-sm" disabled>Show what I changed</button>
+              <span id="diffStatus" class="status-text" aria-live="polite"></span>
+            </div>
+            <div id="diffPanel" class="diff-panel" hidden>
+              <p class="diff-title">Changes from the AI draft</p>
+              <div id="diffSubject" class="diff-block"></div>
+              <div id="diffSummary" class="diff-block"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="demo-footer">
+      <div class="container">
+        <p class="footer-note">Anonymized case study — names, orders, and ticket numbers are illustrative. This is a rule-based portfolio demo using sample data; it is not connected to any live customer system.</p>
+        <p class="footer-links">
+          <a href="https://janackeh.me/case-study/">Read the case study</a>
+          <a href="https://github.com/janackeh" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+        </p>
+        <p class="footer-copy">© <span id="year"></span> Janackeh Blackwell</p>
+      </div>
+    </footer>
+  </main>
+
+  <script src="./demo.js" defer></script>
+</body>
+</html>
